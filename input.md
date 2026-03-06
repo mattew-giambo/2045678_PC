@@ -7,9 +7,9 @@
 
 3) As an operator, I want to see the measurement unit of each sensor so that I can correctly interpret the values.
 
-4) As an operator, I want sensor values to update automatically in real time so that I can detect anomalies immediately.
+4) As an operator, I want the dashboard updates in real-time so I can monitor telemetry and manage rules without refreshing the page.
 
-5) As an operator, I want the dashboard to highlight sensors  that report a warning status so that anomalies can be quickly identified.
+5) As an operator, I want the dashboard to visually highlight sensors that report measurements violating defined rules, so that I can quickly identify and address anomalies.
 
 6) As an operator, I want real-time charts that update automatically as measurement data of sensors arrives so that trends and anomalies can be visualized.
 
@@ -28,13 +28,25 @@
 13) As an operator, I want the dashboard displays the telemetry measurements. 
 
 14) As an operator, I want real-time charts that update automatically as telemetry measurement data arrives so that trends can be visualized.
- 
-15) As an operator, I want the dashboard displays the active actuators at any time.
 
-16) As an operator, I want the dashboard to highlight the sensors that are in the warning state.
+15) As an operator, I want the dashboard displays the list of all actuators.
 
-17) An an operator, I want the dashboard to displays the time at which an actuator has been toggled.
+16) As an operator, I want the dashboard displays the active actuators at any time.
 
-18) An an operator, I want the dashboard to displays the date when an automation rule has been defined.
+17) As an operator, I want the dashboard to highlight the sensors that are in the warning state.
 
-19) 
+18) An an operator, I want the dashboard to displays the time at which an actuator has been toggled.
+
+19) An an operator, I want the dashboard to displays the date when an automation rule has been defined.
+
+20) As an operator, I want to see the minimum and maximum value recorded for each sensor during the current session, so that I can evaluate the range of environmental conditions.
+
+21) As an operator, I want the dashboard to immediately show when a rule updates an actuator's state so I can verify the system reacted properly.
+
+22) As an operator, I want the dashboard to display a history of all system actions triggered by environmental changes, so that I can monitor how the system is responding in real-time.
+
+23) As an operator, I want the dashboard interface organized into distinct visual sections for sensors, telemetry streams, and actuators so that I can navigate the controls quickly.
+
+24) As an operator, I want the dashboard displays when the system is healthy.
+
+25) As an operator, I want the dashboard to display the specific environmental parameter each actuator controls, so that I can rapidly understand the purpose of every device.
