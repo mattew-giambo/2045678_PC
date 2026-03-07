@@ -1,6 +1,6 @@
 import os
 
-# --- CONFIGURATION & ENVIRONMENT VARIABLES ---
+# CONFIGURATION & ENVIRONMENT VARIABLES 
 
 SIMULATOR_BASE_URL = os.getenv("SIMULATOR_URL", "http://simulator:8080")
 ACTIVEMQ_HOST = os.getenv("BROKER_HOST", "activemq")

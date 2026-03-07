@@ -13,9 +13,7 @@ def normalize_rest_data(raw_data):
         "metadata": {}
     }
 
-    # -------------------------------------------------------------
     # 2. Handle 'rest.scalar.v1' (e.g., temperature, humidity)
-    # -------------------------------------------------------------
     if "metric" in raw_data and "value" in raw_data:
         metric_obj = {
             "metric_name": raw_data["metric"],
@@ -26,9 +24,8 @@ def normalize_rest_data(raw_data):
             
         normalized_event["metrics"].append(metric_obj)
 
-    # -------------------------------------------------------------
     # 3. Handle 'rest.chemistry.v1' (e.g., hydroponic_ph, air_quality_voc)
-    # -------------------------------------------------------------
+    
     elif "measurements" in raw_data:
         for item in raw_data["measurements"]:
             metric_name = item.get("metric")
@@ -42,9 +39,8 @@ def normalize_rest_data(raw_data):
                     
                 normalized_event["metrics"].append(metric_obj)
 
-    # -------------------------------------------------------------
+    
     # 4. Handle 'rest.particulate.v1' (e.g., air_quality_pm25)
-    # -------------------------------------------------------------
     elif "pm1_ug_m3" in raw_data or "pm25_ug_m3" in raw_data or "pm10_ug_m3" in raw_data:
         # PM1
         if "pm1_ug_m3" in raw_data:
@@ -68,9 +64,8 @@ def normalize_rest_data(raw_data):
                 "unit": "ug/m3"
             })
 
-    # -------------------------------------------------------------
     # 5. Handle 'rest.level.v1' (e.g., water_tank_level)
-    # -------------------------------------------------------------
+
     elif "level_pct" in raw_data or "level_liters" in raw_data:
         # Level Percentage
         if "level_pct" in raw_data:
