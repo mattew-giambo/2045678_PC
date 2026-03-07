@@ -1,0 +1,36 @@
+services:
+  # ---------------------------------------------------------
+  # 1. IL MESSAGE BROKER (ActiveMQ)
+  # ---------------------------------------------------------
+  activemq:
+    image: rmohr/activemq:latest
+    container_name: mars_broker
+    ports:
+      - "8161:8161"   # Solo la Web Console esposta al tuo PC
+    # Non esponiamo la 61613 fuori, rimane interna per i container
+
+  # ---------------------------------------------------------
+  # 2. IL SIMULATORE DEL PROFESSORE
+  # ---------------------------------------------------------
+  simulator:
+    image: mars-iot-simulator:multiarch_v1
+    container_name: mars_simulator
+    ports:
+      - "8080:8080"
+
+  # ---------------------------------------------------------
+  # 3. IL TUO MICROSERVIZIO DI INGESTIONE REST (Il Poller)
+  # ---------------------------------------------------------
+  rest_poller:
+    build: .  # <-- LA MAGIA È QUI! Il punto indica "usa la cartella corrente"
+    container_name: mars_rest_poller
+    restart: always
+    depends_on:
+      - simulator
+      - activemq
+    environment:
+      - PYTHONUNBUFFERED=1
+      - BROKER_HOST=activemq
+      - BROKER_PORT=61613
+      - SIMULATOR_URL=http://simulator:8080
+
