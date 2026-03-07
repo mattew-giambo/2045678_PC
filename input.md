@@ -50,3 +50,31 @@
 24) As an operator, I want the dashboard displays when the system is healthy.
 
 25) As an operator, I want the dashboard to display the specific environmental parameter each actuator controls, so that I can rapidly understand the purpose of every device.
+
+# EVENT SCHEMA:
+```json
+{
+  "type": "object",
+  "required": ["device_id", "time", "metrics"],
+  "properties": {
+    "device_id": {"type": "string"},
+    "time": {"type": "string", "format": "date-time"},
+    "status": {"type": "string", "enum": ["ok", "warning"]},
+    "metrics": {
+        "type": "array",
+        "items": {
+        "type": "object",
+        "required": ["metric_name", "value"],
+        "properties": {
+          "metric_name": {"type": "string"},
+          "value": {"type": "number"},
+          "unit": {"type": "string"}
+        }
+      }
+    },
+    "metadata": {
+        "type": "object",
+        "properties": {}
+    }
+}
+```
