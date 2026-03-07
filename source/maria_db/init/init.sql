@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS automation_rules (
+CREATE TABLE automation_rules (
     id INT AUTO_INCREMENT PRIMARY KEY,
     
     sensor_name VARCHAR(100) NOT NULL,
