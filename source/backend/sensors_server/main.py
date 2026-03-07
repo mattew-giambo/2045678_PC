@@ -91,7 +91,9 @@ def poll_single_sensor_forever(sensor_id, conn):
             
             if response.status_code == 200:
                 raw_data = response.json()
+                print(f"{raw_data}")
                 standard_event = normalize_rest_data(raw_data)
+                print(f"Normalizzato: {standard_event}")
                 
                 conn.send(body=json.dumps(standard_event), destination=destination)
                 print(f" [{sensor_id}] Published to {destination}")
