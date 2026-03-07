@@ -12,3 +12,10 @@ class InputRule(BaseModel):
 class OutputRule(BaseModel):
     id:int
     timestamp: str
+
+class Rule(InputRule):
+    id: int
+    timestamp: str
+
+class OutputListRules(BaseModel):
+    rules: list[Rule]
