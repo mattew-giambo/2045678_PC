@@ -76,5 +76,6 @@
         "type": "object",
         "properties": {}
     }
+  }
 }
 ```
