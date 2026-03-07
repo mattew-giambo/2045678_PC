@@ -1,2 +1,8 @@
 HOST= "0.0.0.0"
 PORT= 8000
+ACTIVEMQ_HOST= "localhost"
+ACTIVEMQ_PORT= 61613
+ACTIVEMQ_USER= "admin"
+ACTIVEMQ_PASS= "admin"
+SENSORS_QUEUE= "sensors.rest.>"
+TELEMETRY_QUEUE= "telemetry.rest.>"
