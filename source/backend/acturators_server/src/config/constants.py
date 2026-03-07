@@ -18,4 +18,4 @@ SIMULATOR_PORT = 8080
 ACTUATORS_BASE_URL = "/api/actuators/"
 
 FRONTEND_BASE_URL = "localhost" # "frontend" when using docker-compose
-FRONTEND_PORT = 9000
+FRONTEND_PORT = 8005

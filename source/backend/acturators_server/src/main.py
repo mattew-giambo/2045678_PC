@@ -3,7 +3,7 @@ from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
 from src.config.constants import HOST, PORT
 from src.utility.message_broker.message_broker import connect_to_message_broker
-from src.models.rule import InputRule, OutputRule, InputDeleteRule, OutputListRules
+from src.models.rule import InputRule, OutputRule, OutputListRules
 from src.utility.db.close_connection import close_connection
 from src.utility.db.close_cursor import close_cursor
 from src.utility.db.connect_to_database import connect_to_database
@@ -65,6 +65,7 @@ def delete_rule_endpoint(id: int):
     try:
         conn = connect_to_database()
         cursor = get_cursor(conn)
+
         query = """
             DELETE FROM automation_rules WHERE id = %s
         """
@@ -91,6 +92,7 @@ def get_rules_endpoint():
     try:
         conn = connect_to_database()
         cursor = get_cursor(conn)
+        
         query = """
             SELECT id, sensor_name, operator, threshold_value, unit, actuator_name, action, timestamp
             FROM automation_rules
