@@ -13,7 +13,7 @@ from contextlib import asynccontextmanager
 from typing import List, Dict, Any
 
 from config import HOST, PORT, SIMULATOR_URL, ACTUATORS_API_URL
-from broker_client import broker_client
+from source.frontend.frontend.old.broker_client import broker_client
 
 BASE_DIR = Path(__file__).resolve().parent
 

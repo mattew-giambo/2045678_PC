@@ -4,6 +4,9 @@ import os
 HOST = os.getenv("HOST", "0.0.0.0")
 PORT = int(os.getenv("PORT", "8005"))
 
+SENSORS_QUEUE = "sensors.rest.>"
+TELEMETRY_QUEUE = "telemetry.>"
+
 # ActiveMQ Configuration (Message Broker)
 ACTIVEMQ_HOST = os.getenv("BROKER_HOST", "localhost")
 ACTIVEMQ_PORT = int(os.getenv("BROKER_PORT", "61613"))
