@@ -35,7 +35,7 @@ app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), na
 
 @app.get("/", response_class=HTMLResponse)
 async def dashboard(request: Request):
-    return templates.TemplateResponse("dashboard.html", {"request": request})
+    return templates.TemplateResponse("dashboard_1.html", {"request": request})
 
 @app.websocket("/ws/data_stream")
 async def data_stream_endpoint(websocket: WebSocket):
