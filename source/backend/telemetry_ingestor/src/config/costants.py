@@ -1,0 +1,5 @@
+ACTIVEMQ_HOST = "activemq" 
+ACTIVEMQ_PORT = 61613
+
+ACTIVEMQ_USER = "admin"
+ACTIVEMQ_PASSWORD = "admin"

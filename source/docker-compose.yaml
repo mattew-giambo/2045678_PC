@@ -1,0 +1,86 @@
+services:
+  mars_simulator:
+    image: mars-iot-simulator:multiarch_v1
+    container_name: mars_simulator_container
+    ports:
+      - "8080:8080"
+    restart: always
+
+  mariadb:
+    image: mariadb:11.7.2-ubi9
+    container_name: mariadb_container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_DATABASE: mars_db
+      MYSQL_USER: userdb
+      MYSQL_PASSWORD: userpw
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database/data:/var/lib/mysql
+      - ./database/init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-prootpw"]
+      interval: 10s
+      timeout: 5s        
+      retries: 5
+  
+  activemq:
+    image: apache/activemq-classic:latest
+    container_name: activemq_container
+    restart: always
+    ports:
+      - "61613:61613"
+      - "8161:8161"
+    environment:
+      - ACTIVEMQ_ADMIN_USER=admin
+      - ACTIVEMQ_ADMIN_PASSWORD=admin
+
+  sensors_ingestor:
+    build: ./backend/sensors_ingestor
+    container_name: sensors_ingestor_container
+    restart: always
+    depends_on:
+      mars_simulator:
+        condition: service_started
+      mariadb:
+        condition: service_healthy
+      activemq:
+        condition: service_started
+
+  telemetry_ingestor:
+    build: ./backend/telemetry_ingestor
+    container_name: telemetry_ingestor_container
+    restart: always
+    depends_on:
+      mars_simulator:
+        condition: service_started
+      mariadb:
+        condition: service_healthy
+      activemq:
+        condition: service_started
+
+  actuators_controller:
+    build: ./backend/actuators_controller
+    container_name: actuators_controller_container
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      mars_simulator:
+        condition: service_started
+      sensors_ingestor:
+        condition: service_started
+      telemetry_ingestor:
+        condition: service_started
+      mariadb:
+        condition: service_healthy
+      activemq:
+        condition: service_started
+
+
+  
+

@@ -1,4 +1,4 @@
 .vscode
 .DS_Store
-maria_db/data
+database/data
 __pycache__/
