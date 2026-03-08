@@ -17,7 +17,7 @@ This document maps each User Story of the system to its corresponding User Inter
 * **NFR - Reliability:** The connection must be maintained via WebSocket. The frontend client must implement an auto-reconnect logic in case of a temporary disconnection from the backend, without requiring a manual page refresh.
 
 **User Story 3:** As an operator, I want the dashboard displays when the system is healthy.
-* **LoFi Mockup:** ![](/booklets/images/healthy.png)
+* **LoFi Mockup:** ![](/booklets/images/healthyy.png)
 * **NFR - Availability:** The frontend must regularly verify the operational status of the infrastructure by querying the system's diagnostic (health check) endpoints. If the services become unreachable or report a malfunction, the user interface must update to notify the operator of an "Offline" or "Error" state.
 
 ---
@@ -90,9 +90,10 @@ This document maps each User Story of the system to its corresponding User Inter
 ![](/booklets/images/reaction.png)
 * **NFR - Performance:** The evaluation engine must scan the rules and calculate the boolean condition in real time for each event fetched from the ActiveMQ broker (processing time under 100ms).
 
-**User Story 18:** As an operator, I want to view a list of all active automation rules in a management interface so that the current automation logic is visible and understandable.
-* **LoFi Mockup:** ![](/booklets/images/status.png)
-* **NFR - Usability:** The structured data saved in the database must be parsed by the frontend and displayed in a pseudo-natural, readable format (e.g., `IF entrance_humidity > 100 THEN entrance_humidifier OFF`).
+**User Story 18:** As an operator, I want to see the minimum and maximum values recorded for each telemetry during the current session, so that I can evaluate the range of environmental conditions.
+* **LoFi Mockup:** ![](/booklets/images/min_max_tel.png)
+* **NFR - Efficiency:** The min/max calculation must be done in-memory on the client side for the current session.
+
 
 **User Story 19:** An an operator, I want the dashboard to displays the date when an automation rule has been defined.
 * **LoFi Mockup:** ![](/booklets/images/19.jpg)
@@ -110,9 +111,10 @@ This document maps each User Story of the system to its corresponding User Inter
 * **LoFi Mockup:** ![](/booklets/images/warning.png)
 * **NFR - Usability:** The system must translate the `"status": "warning"` payload into a clear visual signal (e.g., changing the color of the box or text) for a quick visual triage.
 
-**User Story 22:** As an operator, I want the dashboard to visually highlight sensors that report measurements violating defined rules, so that I can quickly identify and address anomalies.
-* **LoFi Mockup:** `[Insert crop: Sensor card with an active visual highlight effect]`
-* **NFR - Usability:** The frontend must react by temporarily applying a CSS class (a "flash" animation) to the component when it receives a notification from the broker that a rule for that sensor has just been triggered.
+**User Story 22:** As an operator, I want the dashboard to display the date and time of the first successful connection to the system, so that I know since when the system has been online.
+* **LoFi Mockup:** ![](/booklets/images/conn.png)
+* **NFR - Traceability**: The frontend must record and display the timestamp of the first successful backend connection in the current session, enabling operators to easily see how long the system has been online.
+
 
 **User Story 23:** As an operator, I want the dashboard to display a history of all system actions triggered by environmental changes, so that I can monitor how the system is responding in real-time.
 * **LoFi Mockup:** ![](/booklets/images/history.png)
@@ -125,3 +127,16 @@ This document maps each User Story of the system to its corresponding User Inter
 **User Story 25:** An an operator, I want the dashboard to displays the time at which an actuator has been toggled.
 * **LoFi Mockup:** ![](/booklets/images/history_rule_reaction.png)
 * **NFR - Localization:** The frontend must take the UTC timestamp provided by the backend event and format it automatically into the local time zone of the operator's browser.
+
+
+
+
+
+**User Story 18:** As an operator, I want to view a list of all active automation rules in a management interface so that the current automation logic is visible and understandable.
+* **LoFi Mockup:** ![](/booklets/images/status.png)
+* **NFR - Usability:** The structured data saved in the database must be parsed by the frontend and displayed in a pseudo-natural, readable format (e.g., `IF entrance_humidity > 100 THEN entrance_humidifier OFF`).
+
+
+**User Story 22:** As an operator, I want the dashboard to visually highlight sensors that report measurements violating defined rules, so that I can quickly identify and address anomalies.
+* **LoFi Mockup:** `[Insert crop: Sensor card with an active visual highlight effect]`
+* **NFR - Usability:** The frontend must react by temporarily applying a CSS class (a "flash" animation) to the component when it receives a notification from the broker that a rule for that sensor has just been triggered.
