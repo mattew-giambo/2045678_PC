@@ -3,7 +3,7 @@ from config.constants import ACTIVEMQ_HOST, ACTIVEMQ_PORT, ACTIVEMQ_USER, ACTIVE
 import json
 from typing import Dict, Any
 
-latest_data: Dict[str, Any] = {}
+data_queue = []
 
 class EventListener(stomp.ConnectionListener):
     def __init__(self, conn):
@@ -13,16 +13,24 @@ class EventListener(stomp.ConnectionListener):
         print(f'Error: {frame.body}')
 
     def on_message(self, frame):
-        try:
-            event = json.loads(frame.body)
-            device_id = event.get("device_id")
-           
-            if device_id:
-                latest_data[device_id] = event
-                print(f"Cache aggiornata per: {device_id}")
-               
-        except Exception as e:
-            print(f"Errore nella lettura del messaggio: {e}")
+        event = json.loads(frame.body)
+        device_id = event.get("device_id")
+
+        if device_id:
+            msg_topic = frame.headers.get('destination', '')
+            topic_type = msg_topic.split("/")[2].split(".")[0]
+            
+            latest_data = event['metrics'][0].copy() 
+            latest_data['status'] = event['status']
+            latest_data['device_id'] = device_id
+
+            if topic_type == 'sensor':
+                latest_data['type'] = "sensor"
+            else:
+                latest_data['type'] = "telemetry"
+
+            data_queue.append(latest_data)
+
 
     def on_connected(self, frame):
         print("Connected to ActiveMQ! Subscribing to the topics...")

@@ -1,5 +1,5 @@
 HOST = "0.0.0.0"
-PORT = "8005"
+PORT = 8005
 
 SENSORS_TOPIC = "sensor.rest.>"
 TELEMETRY_TOPIC = "telemetry.>"
@@ -8,6 +8,8 @@ ACTIVEMQ_HOST = "activemq"
 ACTIVEMQ_PORT = 61613
 ACTIVEMQ_USER = "admin"
 ACTIVEMQ_PASS = "admin"
+
+ACTUATORS_CONTROLLER_HOST = "http://actuators_controller:8000"
 
 SENSORS_TOPICS = [
     "greenhouse_temperature",

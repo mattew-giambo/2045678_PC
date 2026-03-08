@@ -55,7 +55,7 @@ def check_and_trigger_actuators(event: str):
                 timestamp = response_data.get("updated_at")
 
                 # Communicate with the frontend
-                url = urljoin(FRONTEND_BASE_URL, "/activate_rule")
+                url = urljoin(FRONTEND_BASE_URL, "/activate_actuator")
                 
                 response = requests.post(url, json=ActuatorsUpdate(
                     id_rule= rule_id,
