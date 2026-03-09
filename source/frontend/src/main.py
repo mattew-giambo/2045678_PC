@@ -9,7 +9,7 @@ from config.constants import HOST, PORT, ACTUATORS_CONTROLLER_HOST
 from utility.message_broker import data_queue
 import os
 import asyncio
-from models.actuators import ActuatorsUpdate
+from models.actuators import ActuatorsUpdate, ActuatorsInput
 import requests
 from urllib.parse import urljoin
 from models.rule import OutputRule, InputRule, OutputListRules
@@ -121,6 +121,19 @@ def delete_rule_endpoint(id: int):
             status_code= 500,
             detail=str(e)
             )
+
+@app.post("/toggle_actuator/{actuator_name}")
+def toggle_actuator_endpoint(actuator_name:str, payload: ActuatorsInput):
+    action= payload.state
+    actuator_path = f"/toggle_actuator/{actuator_name}"
+    url = urljoin(ACTUATORS_CONTROLLER_HOST, actuator_path)
+    response = requests.post(url, json=ActuatorsInput(state= action).model_dump())
+    response.raise_for_status()
+
+    response_data = response.json()
+
+    actuators_queue.append(response_data)
+    return ActuatorsUpdate.model_validate(response_data)
 
 if __name__ == "__main__":
     uvicorn.run(app, host=HOST, port=PORT)

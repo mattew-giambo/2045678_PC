@@ -1,7 +1,8 @@
+from urllib.parse import urljoin
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from contextlib import asynccontextmanager
-from config.constants import HOST, PORT
+from config.constants import HOST, PORT, SIMULATOR_URL, ACTUATORS_BASE_URL, FRONTEND_BASE_URL
 from utility.message_broker.message_broker import connect_to_message_broker
 from models.rule import InputRule, OutputRule, OutputListRules
 from utility.db.close_connection import close_connection
@@ -9,7 +10,8 @@ from utility.db.close_cursor import close_cursor
 from utility.db.connect_to_database import connect_to_database
 from utility.db.get_cursor import get_cursor
 import mariadb
-
+import requests
+from models.actuator_models import ActuatorsInput, ActuatorsUpdate
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     broker_conn = connect_to_message_broker()
@@ -117,5 +119,22 @@ def get_rules_endpoint():
             close_connection(conn)
 
 
+@app.post("/toggle_actuator/{actuator_name}")
+def toggle_actuator_endpoint(actuator_name:str, payload: ActuatorsInput):
+    action= payload.state
+    actuator_path = f"{ACTUATORS_BASE_URL}/{actuator_name}"
+    url = urljoin(SIMULATOR_URL, actuator_path)
+    response = requests.post(url, json=ActuatorsInput(state= action).model_dump())
+    response.raise_for_status()
+
+    response_data = response.json()
+    timestamp = response_data.get("updated_at")
+    
+    return ActuatorsUpdate(
+        id_rule= -1,
+        actuator_name= actuator_name,
+        action= action,
+        timestamp= timestamp
+    )
 if __name__ == "__main__":
     uvicorn.run(app, host=HOST, port=PORT)

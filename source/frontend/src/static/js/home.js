@@ -56,8 +56,12 @@ function addHistoryRow(data) {
     } catch (e) {
         console.warn("Timestamp non standard:", data.timestamp);
     }
-
-    const actionText = `${data.actuator_name} set to ${data.action} by rule ${data.id_rule}`;
+    
+    let actionText = "";
+    if(data.id_rule != -1)
+        actionText = `${data.actuator_name} set to ${data.action} by rule ${data.id_rule}`;
+    else
+        actionText = `${data.actuator_name} set to ${data.action} manually`;
 
     // ==========================================
     // NUOVO: CONTROLLO ANTI-DUPLICATI

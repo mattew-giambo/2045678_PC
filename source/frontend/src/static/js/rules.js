@@ -218,74 +218,75 @@ document.addEventListener("DOMContentLoaded", () => {
     // GESTIONE TABELLA REGOLE (LOAD & DELETE)
     // ==========================================
 
-    const rulesTbody = document.querySelector(".rules-table tbody");
+const rulesTbody = document.querySelector(".rules-table tbody");
 
-    // 1. Funzione per caricare e renderizzare la tabella
-    async function loadRules() {
-        try {
-            const response = await fetch("http://localhost:8005/rules");
-            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+// 1. Funzione per caricare e renderizzare la tabella
+async function loadRules() {
+    try {
+        const response = await fetch("http://localhost:8005/rules");
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
 
-            const data = await response.json();
-            
-            // data.rules è la lista fornita dal tuo OutputListRules
-            const rules = data?.rules || [];
+        const data = await response.json();
+        
+        // data.rules è la lista fornita dal tuo OutputListRules
+        const rules = data?.rules || [];
 
-            // Aggiorna anche il numeretto delle active rules in alto alla pagina (se lo hai ancora)
-            const countSpan = document.getElementById("rules_num");
-            if (countSpan) countSpan.innerHTML = rules.length;
+        // Aggiorna anche il numeretto delle active rules in alto alla pagina (se lo hai ancora)
+        const countSpan = document.getElementById("rules_num");
+        if (countSpan) countSpan.innerHTML = rules.length;
 
-            // Svuota la tabella
-            rulesTbody.innerHTML = "";
+        // Svuota la tabella
+        rulesTbody.innerHTML = "";
 
-            // Se non ci sono regole, mostra un messaggio pulito
-            if (rules.length === 0) {
-                rulesTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b; font-style:italic;">No active rules defined.</td></tr>`;
-                return;
+        // Se non ci sono regole, mostra un messaggio pulito
+        if (rules.length === 0) {
+            rulesTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#64748b; font-style:italic;">No active rules defined.</td></tr>`;
+            return;
+        }
+
+        // Popola la tabella
+        rules.forEach(rule => {
+            // Estrae la data. Supponiamo che il tuo modello Pydantic abbia un campo 'timestamp' o 'created_at'.
+            // Se non ce l'ha, puoi ometterlo o usare una data fissa finché non lo aggiungi.
+            let dateStr = "N/A";
+            if (rule.created_at) {
+                const dateObj = new Date(rule.created_at);
+                
+                // Controlliamo che la data sia valida
+                if (!isNaN(dateObj)) {
+                    // Viaggio nel futuro di +10 anni!
+                    dateObj.setFullYear(dateObj.getFullYear() + 10);
+                    
+                    // Ora estraiamo la parte YYYY-MM-DD dalla nuova data
+                    dateStr = dateObj.toISOString().split("T")[0];
+                }
             }
 
-            // Popola la tabella
-            rules.forEach(rule => {
-                // Estrae la data. Supponiamo che il tuo modello Pydantic abbia un campo 'timestamp' o 'created_at'.
-                // Se non ce l'ha, puoi ometterlo o usare una data fissa finché non lo aggiungi.
-                let dateStr = "N/A";
-                if (rule.created_at) {
-                    const dateObj = new Date(rule.created_at);
-                    
-                    // Controlliamo che la data sia valida
-                    if (!isNaN(dateObj)) {
-                        // Viaggio nel futuro di +10 anni!
-                        dateObj.setFullYear(dateObj.getFullYear() + 10);
-                        
-                        // Ora estraiamo la parte YYYY-MM-DD dalla nuova data
-                        dateStr = dateObj.toISOString().split("T")[0];
-                    }
-                }
+            // Costruisce la stringa logica esatta richiesta
+            const logicString = `IF ${rule.sensor_name} ${rule.operator} ${rule.threshold_value} ${rule.unit} THEN set ${rule.actuator_name} to ${rule.action}`;
 
-                // Costruisce la stringa logica esatta richiesta
-                const logicString = `IF ${rule.sensor_name} ${rule.operator} ${rule.threshold_value} ${rule.unit} THEN set ${rule.actuator_name} to ${rule.action}`;
+            const tr = document.createElement("tr");
+            
+            tr.innerHTML = `
+                <td>${rule.id}</td>
+                <td class="rule-logic">${logicString}</td>
+                <td>${dateStr}</td>
+                <td>
+                    <button class="btn-delete" data-id="${rule.id}">Delete</button>
+                </td>
+            `;
 
-                const tr = document.createElement("tr");
-                
-                tr.innerHTML = `
-                    <td class="rule-logic">${logicString}</td>
-                    <td>${dateStr}</td>
-                    <td>
-                        <button class="btn-delete" data-id="${rule.id}">Delete</button>
-                    </td>
-                `;
+            rulesTbody.appendChild(tr);
+        });
 
-                rulesTbody.appendChild(tr);
-            });
+        // Aggiungi gli event listener ai nuovi bottoni "Delete"
+        attachDeleteListeners();
 
-            // Aggiungi gli event listener ai nuovi bottoni "Delete"
-            attachDeleteListeners();
-
-        } catch (error) {
-            console.error("❌ Errore nel caricamento delle regole:", error);
-            rulesTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load rules.</td></tr>`;
-        }
+    } catch (error) {
+        console.error("❌ Errore nel caricamento delle regole:", error);
+        rulesTbody.innerHTML = `<tr><td colspan="3" style="text-align:center; color:#ef4444;">Failed to load rules.</td></tr>`;
     }
+}
 
     // 2. Funzione per agganciare i click ai bottoni Delete
     function attachDeleteListeners() {
@@ -332,3 +333,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Avvia il caricamento iniziale appena la pagina si apre
     loadRules();
+
+
+
+// Manually Activation of Actuators
+greenhouse_temperature_ac = document.getElementById("cooling_fan");
+entrance_humidifier_ac = document.getElementById("entrance_humidifier");
+hall_ventilation_ac = document.getElementById("hall_ventilation");
+habitat_heater_ac = document.getElementById("habitat_heater");
+
+const actuators = [greenhouse_temperature_ac, entrance_humidifier_ac, hall_ventilation_ac, habitat_heater_ac];
+
+actuators.forEach(actuator => {
+    actuator.addEventListener("click", async () => {
+        const actuatorName = actuator.getAttribute("id");
+        const currentState = actuator.innerText;
+        const newAction = currentState === "ON" ? "OFF" : "ON";
+
+        try {
+            const response = await fetch(`/toggle_actuator/${actuatorName}`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    state: newAction
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const responseData = await response.json();
+            updateActuatorUI(responseData.actuator_name, responseData.action, responseData.timestamp);
+        } catch (error) {
+            console.error("Error updating actuator manually:", error);
+            alert("Failed to update actuator. Please try again.");
+        }
+    });
+});
