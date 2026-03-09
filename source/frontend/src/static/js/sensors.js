@@ -1,18 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
-    
-    // --- 1. GLOBAL STATE & WEB SOCKET ---
     const socket = new WebSocket('ws://localhost:8005/ws/data_stream');
     
-    // Telemetry state (from previous implementation)
     const telemetryStreams = {}; 
     let activeTelemetryId = null;
     let focusedChart = null;
     
-    // Sensors state
     const sensorCharts = {};
-    const sensorStats = {}; // Stores min/max for each sensor
+    const sensorStats = {}; 
 
-    // --- 2. INITIALIZE TELEMETRY CHART (from previous setup) ---
+    //inizilize telemetry chart
     const telemetryCanvas = document.getElementById('focused-canvas');
     if (telemetryCanvas) {
         focusedChart = new Chart(telemetryCanvas.getContext('2d'), {
@@ -37,36 +33,33 @@ document.addEventListener("DOMContentLoaded", () => {
                             realtime: { duration: 20000, refresh: 1000, delay: 1000 },
                             grid: {
                                 display: true,
-                                color: 'rgba(255, 255, 255, 0.05)', // Griglia verticale sottilissima
-                                drawBorder: false
+                                color: 'rgba(255, 255, 255, 0.05)', 
                             },
                             ticks: { 
                                 display: true,
-                                color: '#64748b', // Colore grigetto per i numeri
-                                font: { size: 9 }, // Numeri piccoli
-                                maxTicksLimit: 4 // Non più di 4 numeri sull'asse Y
+                                color: '#64748b', 
+                                font: { size: 9 }, 
+                                maxTicksLimit: 4 
                             }
                         },
                         y: { 
                             display: true,
                             grid: {
                                 display: true,
-                                color: 'rgba(255, 255, 255, 0.05)', // Griglia orizzontale
+                                color: 'rgba(255, 255, 255, 0.05)', 
                                 drawBorder: false
                             },
                             ticks: { 
                                 display: true,
-                                color: '#64748b', // Colore grigetto per i numeri
-                                font: { size: 9 }, // Numeri piccoli
-                                maxTicksLimit: 4 // Non più di 4 numeri sull'asse Y
+                                color: '#64748b',
+                                font: { size: 9 }, 
+                                maxTicksLimit: 4 
                             }
                         }
                 },
                 plugins: { legend: { display: false }, streaming: { frameRate: 30 } }
             }
         });
-
-        // Setup Telemetry Rows clicking
         const rows = document.querySelectorAll('.telem-row');
         rows.forEach(row => {
             const id = row.querySelector('.telem-name').innerText.trim();
@@ -81,18 +74,15 @@ document.addEventListener("DOMContentLoaded", () => {
         });
         if (rows.length > 0) rows[0].click();
     }
-
-    // --- 3. INITIALIZE SENSOR SPARKLINES ---
-    // Find all sensor cards and create a mini-chart for each
+    // initialize sensor sparkline
     const sensorCards = document.querySelectorAll('.sensor-card');
     
     sensorCards.forEach(card => {
-        const sensorId = card.id.replace('sensor-card-', ''); // e.g., 'greenhouse_temperature'
+        const sensorId = card.id.replace('sensor-card-', '');
         const canvasId = `chart-${sensorId}`;
         const canvasElement = document.getElementById(canvasId);
         
         if (canvasElement) {
-            // Initialize min/max tracking for this sensor
             sensorStats[sensorId] = { min: Infinity, max: -Infinity };
             
             sensorCharts[sensorId] = new Chart(canvasElement.getContext('2d'), {
@@ -102,7 +92,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         borderColor: '#3b82f6',
                         borderWidth: 2,
                         pointRadius: 0,
-                        tension: 0.3, // Smooth curves
+                        tension: 0.3, 
                         data: []
                     }]
                 },
@@ -116,23 +106,22 @@ document.addEventListener("DOMContentLoaded", () => {
                             realtime: { duration: 20000, refresh: 1000, delay: 1000 },
                             grid: {
                                 display: true,
-                                color: 'rgba(255, 255, 255, 0.05)', // Griglia verticale sottilissima
-                                drawBorder: false
+                                color: 'rgba(255, 255, 255, 0.05)', 
                             },
-                            ticks: { display: false } // Nasconde i numeri per risparmiare spazio
+                            ticks: { display: false } 
                         },
                         y: { 
                             display: true,
                             grid: {
                                 display: true,
-                                color: 'rgba(255, 255, 255, 0.05)', // Griglia orizzontale
+                                color: 'rgba(255, 255, 255, 0.05)', 
                                 drawBorder: false
                             },
                             ticks: { 
                                 display: true,
-                                color: '#64748b', // Colore grigetto per i numeri
-                                font: { size: 9 }, // Numeri piccoli
-                                maxTicksLimit: 4 // Non più di 4 numeri sull'asse Y
+                                color: '#64748b',
+                                font: { size: 9 },
+                                maxTicksLimit: 4 
                 }
         }
     },
@@ -143,11 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    // --- 4. WEBSOCKET MESSAGE HANDLER ---
+
+    //wsocket message handler
     socket.onmessage = (event) => {
         const data = JSON.parse(event.data);
         
-        // Route data based on the 'type' field
         if (data.type === 'telemetry') {
             handleTelemetryData(data);
         } else if (data.type === 'sensor') {
@@ -161,8 +150,8 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.onerror = (e) => console.error("WebSocket error:", e);
 
 
-    // --- 5. DATA PROCESSING FUNCTIONS ---
-
+  
+//data processing functions
     function handleTelemetryData(data) {
         const id = data.device_id;
         const value = parseFloat(data.value);
@@ -189,7 +178,6 @@ document.addEventListener("DOMContentLoaded", () => {
         telemetryStreams[id].history.push(point);
         if (telemetryStreams[id].history.length > 60) telemetryStreams[id].history.shift();
 
-        // Update row UI
         const rows = document.querySelectorAll('.telem-row');
         for (let row of rows) {
             if (row.querySelector('.telem-name').innerText.trim() === id) {
@@ -198,7 +186,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // Update focused chart if this is the active stream
         if (activeTelemetryId === id && focusedChart) {
             document.getElementById('focused-value').innerText = telemetryStreams[id].value;
             document.getElementById('focused-peak').innerText = telemetryStreams[id].peak;
@@ -215,7 +202,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const value = parseFloat(data.value);
         const formattedValue = `${value} ${data.unit}`;
         
-        // 1. Update text elements in the DOM
         const valueElement = document.getElementById(`sensor-value-${id}`);
         const badgeElement = document.getElementById(`sensor-badge-${id}`);
         
@@ -223,7 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (badgeElement) {
             badgeElement.innerText = formattedValue;
             
-            // Optional: Change badge color based on status (if your CSS classes support it)
             if (data.status === 'warning') {
                 badgeElement.className = "sensor-badge badge-yellow";
             } else {
@@ -231,7 +216,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // 2. Update Min/Max tracking
         if (sensorStats[id]) {
             if (value < sensorStats[id].min) sensorStats[id].min = value;
             if (value > sensorStats[id].max) sensorStats[id].max = value;
@@ -242,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        // 3. Push data to the specific sparkline chart
         if (sensorCharts[id]) {
             sensorCharts[id].data.datasets[0].data.push({
                 x: Date.now(),
@@ -252,7 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Helper function for telemetry updates
     function updateFocusedTelemetryCard(id) {
         const stream = telemetryStreams[id];
         if (!stream || !focusedChart) return;
