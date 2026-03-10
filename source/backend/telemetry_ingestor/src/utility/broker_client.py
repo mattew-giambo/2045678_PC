@@ -1,8 +1,8 @@
 import stomp
 import json
 
-from config.costants import ACTIVEMQ_HOST, ACTIVEMQ_PORT
-from config.costants import ACTIVEMQ_USER, ACTIVEMQ_PASSWORD
+from config.constants import ACTIVEMQ_HOST, ACTIVEMQ_PORT
+from config.constants import ACTIVEMQ_USER, ACTIVEMQ_PASSWORD
 
 class BrokerClient:
     def __init__(self):

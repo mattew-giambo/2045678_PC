@@ -20,6 +20,9 @@ logic_operators = {
 }
 
 def check_and_trigger_actuators(event: str):
+    conn = None
+    cursor = None
+    
     try:
         event_dict = json.loads(event)
         device_id = event_dict["device_id"]

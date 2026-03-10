@@ -27,9 +27,9 @@ def normalize_telemetry(topic: str, raw_data: Dict[str, Any]) -> Dict[str, Any]:
     # 1. Initialize the base unified event
     unified_event = {
         "device_id": topic,
-        "time": raw_data.get("event_time", ""),  # Using "time" to match your schema!
+        "time": raw_data.get("event_time", ""),
         "status": raw_data.get("status", "ok"),
-        "metrics": [],  
+        "metrics": [],
         "metadata": {}
     }
 

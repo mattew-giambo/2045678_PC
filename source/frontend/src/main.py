@@ -69,7 +69,7 @@ async def update_actuators_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         print(f"Client Disconnected")
 
-@app.post("/activate_actuator", response_model_by_alias=ActuatorsUpdate)
+@app.post("/activate_actuator")
 def activate_actuator_endpoint(payload: ActuatorsUpdate):
     actuators_queue.append(payload.model_dump())
     actuators_queue_ws.append(payload.model_dump())
